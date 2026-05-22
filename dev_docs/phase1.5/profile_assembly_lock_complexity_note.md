@@ -20,16 +20,18 @@ It is not an implementation spec and does not introduce production code. It prov
 Phase 3 should implement the minimum useful path:
 
 ```text
-Profile -> ProfileClosureService -> Package Lock -> MaterializationPreviewService
+Profile -> ProfileClosureService -> Approval boundary -> Package Lock -> MaterializationPreviewService
 
-Task + target_host -> DiscoveryService -> AssemblyPlanner -> AssemblyPlanValidator -> Package Lock -> MaterializationPreviewService
+Task + target_host -> DiscoveryService -> AssemblyPlanner -> AssemblyPlanValidator -> Approval boundary -> Package Lock -> MaterializationPreviewService
 
-Task + base Profile -> ProfileClosureService -> DiscoveryService -> AssemblyPlanner with profile_delta -> AssemblyPlanValidator -> Package Lock -> MaterializationPreviewService
+Task + base Profile -> ProfileClosureService -> DiscoveryService -> AssemblyPlanner with profile_delta -> AssemblyPlanValidator -> Approval boundary -> Package Lock -> MaterializationPreviewService
 ```
 
 ## Service Contracts
 
 The contracts below are pseudo-contracts. They should become typed Python models and service classes during Phase 3.
+
+The registry query service is supplied by the application layer to each service. Phase 3 should define a shared registry query protocol or facade over the Phase 2 registry store so services do not own storage or create separate query lifecycles.
 
 ### ProfileClosureService
 
@@ -115,6 +117,8 @@ Outputs:
 - missing assets/capabilities;
 - warnings;
 - reason codes;
+- rationale entries;
+- risk summaries;
 - `profile_delta`;
 - estimated context cost.
 
@@ -153,6 +157,34 @@ Important rules:
 - Warnings may require explicit approval before LockBuilder runs.
 - Validator must not mutate the Assembly Plan in place.
 
+### Approval Boundary
+
+Responsibility: convert a valid Profile closure or Assembly Plan into an approved input for LockBuilder.
+
+Phase 3 can implement approval as a simple CLI confirmation, a policy-approved marker, or a small approval record. It does not need a standalone production approval service, but the boundary must be explicit so valid does not silently mean approved.
+
+Inputs:
+
+- `ProfileClosureResult` or `AssemblyPlan`;
+- validation report;
+- warnings;
+- policy context;
+- user or policy decision.
+
+Outputs:
+
+- approval record or approval token;
+- accepted warning records;
+- rejected warning records or rejection reason codes;
+- actor metadata when available;
+- approval timestamp.
+
+Important rules:
+
+- Approval does not mutate the saved Profile.
+- Approval does not choose assets.
+- LockBuilder must require explicit approval input.
+
 ### LockBuilder
 
 Responsibility: build a reproducible Package Lock from an approved profile closure or approved Assembly Plan.
@@ -178,6 +210,9 @@ Outputs:
 - trust and permission snapshot;
 - policy snapshot;
 - accepted warning records;
+- materialization assumptions;
+- created-for-task metadata when applicable;
+- base profile metadata when applicable;
 - reproducibility metadata.
 
 Important rules:
@@ -203,6 +238,8 @@ Inputs:
 Outputs:
 
 - `MaterializationPreview`;
+- generic markdown preview artifact;
+- generic JSON preview artifact;
 - target file plan;
 - rendered content summaries or hashes;
 - warnings;
@@ -215,6 +252,7 @@ Important rules:
 - Preview must not write target files unless a later phase explicitly scopes materialization execution.
 - Preview should be deterministic and snapshot-testable.
 - Actual materialization and target-specific adapters are beyond Phase 1.5 and should be carefully scoped in later phases.
+- Materialized Bundle remains the later output of actual materialization; Phase 3 preview describes what would become that bundle without writing it.
 
 ## Hard Problems
 

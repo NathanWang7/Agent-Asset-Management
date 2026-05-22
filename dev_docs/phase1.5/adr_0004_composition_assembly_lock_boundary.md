@@ -12,6 +12,7 @@ Phase 3 should implement composition, assembly, lockfile, and materialization-pr
 - `DiscoveryService`
 - `AssemblyPlanner`
 - `AssemblyPlanValidator`
+- approval boundary
 - `LockBuilder`
 - `MaterializationPreviewService`
 
@@ -20,6 +21,8 @@ These boundaries must remain separate. Phase 3 should not collapse profile closu
 Phase 3 should implement minimal reason-code explain/validate inside the composition pipeline so CLI users and tests can understand selected, excluded, warned, and missing assets. The fuller agent-facing explain/validate HTTP API belongs to Phase 4A Local Agent Gateway API.
 
 Phase 1.5 does not implement any production profile closure, assembly planning, package lock generation, or materialization code.
+
+All services should receive a registry query boundary from the application layer. Phase 3 should define this as a shared query protocol or service facade over the Phase 2 registry store, not as service-owned storage.
 
 ## Context
 
@@ -131,6 +134,8 @@ Outputs:
 - `profile_delta` when a base profile exists;
 - warnings;
 - reason codes;
+- rationale entries;
+- risk summaries;
 - missing dependencies or capabilities;
 - estimated context cost.
 
@@ -140,6 +145,34 @@ Does not:
 - write files;
 - bypass validator or policy;
 - make irreversible governance changes.
+
+### Approval Boundary
+
+Owns the transition from a valid Assembly Plan or Profile closure to an approved input for LockBuilder.
+
+Phase 3 may implement this as a simple CLI confirmation or explicit policy-approved marker rather than a standalone service. The boundary still must be modeled so LockBuilder never treats "valid" as the same thing as "approved."
+
+Inputs:
+
+- Profile closure or Assembly Plan;
+- validation report;
+- warnings;
+- policy context;
+- user or policy approval decision.
+
+Outputs:
+
+- approval record or approval token;
+- accepted warnings;
+- rejected warnings or rejection reason codes;
+- approval timestamp and actor metadata when available.
+
+Does not:
+
+- mutate the Assembly Plan;
+- choose additional assets;
+- build the lockfile;
+- materialize assets.
 
 ### AssemblyPlanValidator
 
@@ -192,6 +225,8 @@ Outputs:
 - trust and permission snapshot;
 - accepted warnings;
 - policy snapshot reference or embedded snapshot.
+- materialization assumptions;
+- source task and base profile metadata when applicable.
 
 Does not:
 
@@ -215,6 +250,8 @@ Inputs:
 Outputs:
 
 - preview artifact;
+- markdown preview artifact;
+- JSON preview artifact;
 - target file plan;
 - warnings;
 - diff summary;
@@ -263,6 +300,7 @@ The services answer different product questions:
 | `DiscoveryService` | What assets might help this task and target? |
 | `AssemblyPlanner` | What should this agent use for this task right now? |
 | `AssemblyPlanValidator` | Is this plan internally valid and policy-compatible? |
+| Approval boundary | Has a human or policy accepted this valid closure/plan and its warnings? |
 | `LockBuilder` | What exact approved assets, hashes, provenance, and policy snapshot were resolved? |
 | `MaterializationPreviewService` | What would be written for this target host? |
 
@@ -277,6 +315,7 @@ Phase 3 implementation specs should:
 - keep reason codes stable and deterministic;
 - use snapshot tests for Assembly Plan, Package Lock, and preview outputs;
 - reject or warn on policy issues through validator outputs, not hidden side effects;
+- require explicit approval input before lock generation;
 - keep CLI commands as adapters over services.
 
 Phase 3 implementation specs should avoid:

@@ -8,6 +8,8 @@ This note summarizes the technical spike decisions needed before Phase 2. It doe
 
 Focused cross-ADR consistency review was performed while preparing this note. No contradictions were found among ADR 0001 through ADR 0006 for the decisions summarized below.
 
+Use this note as the Phase 2 entry point before writing the Phase 2 implementation spec.
+
 ## Work Order Summary
 
 | Work Order | Deliverables | Result |
@@ -156,7 +158,7 @@ Phase 2 should implement persistent registry and related CLI/query usability wit
 7. Rebuild flow from manifest to persistent projection.
 8. Deterministic JSON export.
 9. Query service integration and CLI adapter updates.
-10. Event placeholder reservation, if included.
+10. Event placeholder reservation for `UsageEvent`, `AuditLog`, and `RejectionEvent`.
 11. Validation and error handling behavior.
 12. Fixtures and snapshot tests.
 13. CLI smoke and user-facing docs updates.
@@ -167,18 +169,18 @@ Phase 2 should implement persistent registry and related CLI/query usability wit
 
 These are not Phase 1.5 blockers, but they should inform Phase 2/3/4 specs:
 
-- Registry schema: decide whether `registry_meta` remains key-value or a dedicated schema version table is introduced.
-- Registry schema: document absolute path fields as rebuild-time artifacts, not portable/export comparison keys.
-- Registry schema: decide foreign key policy for validation issues and dependency tables.
-- Registry schema: define consistency rules for denormalized Asset Card scalar columns versus `card_json`.
-- Registry schema: clarify declared dependency references versus resolved dependency edges.
-- Events: decide whether event records need both `occurred_at` and `recorded_at`.
-- Events: decide unified export discriminator fields and cross-event correlation conventions.
-- API/MCP: record SDK/framework versions at implementation time.
-- API/MCP: review MCP transport/security recommendations again when Phase 4B starts.
-- Composition docs: avoid drift between ADR 0004 and the complexity note when turning them into Phase 3 implementation specs.
-- Frontend: decide Node/Vite version constraints in Phase 6.
-- CI/templates: issue template defaults are generic; phase-specific labels still need to be applied at issue creation.
+- Registry schema (ADR 0001): decide whether `registry_meta` remains key-value or a dedicated schema version table is introduced.
+- Registry schema (ADR 0001): document absolute path fields as rebuild-time artifacts, not portable/export comparison keys.
+- Registry schema (ADR 0001): decide foreign key policy for validation issues and dependency tables.
+- Registry schema (ADR 0001): define consistency rules for denormalized Asset Card scalar columns versus `card_json`.
+- Registry schema (ADR 0001): clarify declared dependency references versus resolved dependency edges.
+- Events (ADR 0002): decide whether event records need both `occurred_at` and `recorded_at`.
+- Events (ADR 0002): decide unified export discriminator fields and cross-event correlation conventions.
+- API/MCP (ADR 0003): record SDK/framework versions at implementation time.
+- API/MCP (ADR 0003): review MCP transport/security recommendations again when Phase 4B starts.
+- Composition docs (ADR 0004): avoid drift between ADR 0004 and the complexity note when turning them into Phase 3 implementation specs.
+- Frontend (ADR 0005): decide Node/Vite version constraints in Phase 6.
+- CI/templates (ADR 0006): issue template defaults are generic; phase-specific labels still need to be applied at issue creation.
 
 ## Final Note
 

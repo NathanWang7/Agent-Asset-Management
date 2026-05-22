@@ -6,11 +6,13 @@ Phase 1.5 Work Orders WO1-WO7 are complete and merged into `main`.
 
 This note summarizes the technical spike decisions needed before Phase 2. It does not claim that Phase 2+ production capabilities have been implemented.
 
+Focused cross-ADR consistency review was performed while preparing this note. No contradictions were found among ADR 0001 through ADR 0006 for the decisions summarized below.
+
 ## Work Order Summary
 
 | Work Order | Deliverables | Result |
 | --- | --- | --- |
-| WO1 — Phase 1 Handoff Audit | `phase_1_handoff_review.md` | Phase 1 accepted for Phase 1.5/Phase 2 planning. No P0/P1 handoff blockers. |
+| WO1 — Phase 1 Handoff Audit | `dev_docs/phase1.5/phase_1_handoff_review.md` | Phase 1 accepted for Phase 1.5/Phase 2 planning. No P0/P1 handoff blockers. |
 | WO2 — Registry Storage Spike and ADR | ADR 0001, `registry_schema_draft.md` | SQLite selected as primary registry store; deterministic JSON export retained; DuckDB deferred. |
 | WO3 — Usage / Audit / Rejection Event Placeholder ADR | ADR 0002 | Append-only `UsageEvent`, `AuditLog`, and `RejectionEvent` placeholders defined. |
 | WO4 — API and MCP Framework Spike | ADR 0003 | FastAPI selected for future Local Agent Gateway API; official MCP Python SDK selected for future MCP server; stdio first. |

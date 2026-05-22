@@ -1,0 +1,14 @@
+package:
+  id: invalid-broken-dependency
+  name: Invalid Broken Dependency
+  version: 0.1.0
+
+assets:
+  - id: reviewer
+    type: agent
+    path: agents/reviewer.md
+    trust_status: trusted
+    depends_on:
+      - asset:missing-style-guide
+
+profiles: []

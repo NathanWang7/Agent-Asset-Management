@@ -1,0 +1,16 @@
+package:
+  id: invalid-broken-profile-include
+  name: Invalid Broken Profile Include
+  version: 0.1.0
+
+assets:
+  - id: reviewer
+    type: agent
+    path: agents/reviewer.md
+    trust_status: trusted
+
+profiles:
+  - id: review
+    target_host: codex
+    includes:
+      - asset:missing-asset

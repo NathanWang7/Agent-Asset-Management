@@ -1,0 +1,12 @@
+package:
+  id: invalid-missing-file
+  name: Invalid Missing File
+  version: 0.1.0
+
+assets:
+  - id: missing-prompt
+    type: prompt
+    path: prompts/missing.md
+    trust_status: trusted
+
+profiles: []

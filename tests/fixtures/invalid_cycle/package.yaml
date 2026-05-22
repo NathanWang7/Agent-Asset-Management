@@ -1,0 +1,21 @@
+package:
+  id: invalid-cycle
+  name: Invalid Cycle
+  version: 0.1.0
+
+assets:
+  - id: cycle-a
+    type: agent
+    path: agents/cycle_a.md
+    trust_status: trusted
+    depends_on:
+      - asset:cycle-b
+
+  - id: cycle-b
+    type: agent
+    path: agents/cycle_b.md
+    trust_status: trusted
+    depends_on:
+      - asset:cycle-a
+
+profiles: []

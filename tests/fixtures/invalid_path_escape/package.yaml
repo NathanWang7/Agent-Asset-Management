@@ -1,0 +1,12 @@
+package:
+  id: invalid-path-escape
+  name: Invalid Path Escape
+  version: 0.1.0
+
+assets:
+  - id: escaping-prompt
+    type: prompt
+    path: ../outside.md
+    trust_status: trusted
+
+profiles: []

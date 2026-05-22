@@ -90,6 +90,21 @@ def _validate_asset_paths(
 ) -> None:
     resolved_root = package_root.resolve()
     for index, asset in enumerate(manifest.assets):
+        if Path(asset.path).is_absolute():
+            issues.append(
+                ValidationIssue(
+                    severity=ValidationSeverity.ERROR,
+                    code="ASSET_PATH_ABSOLUTE",
+                    message=(
+                        "Asset path must be relative to the package root: "
+                        f"{asset.path}"
+                    ),
+                    path=f"assets[{index}].path",
+                    asset_id=asset.id,
+                )
+            )
+            continue
+
         resolved_path = _resolve_asset_path(resolved_root, asset.path)
         if not _is_within_package_root(resolved_root, resolved_path):
             issues.append(

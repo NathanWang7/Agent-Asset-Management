@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aam.core.enums import AssetType, AssetVisibility, LifecycleStatus, TrustStatus
 from aam.models.asset_card import AssetCardProjection
+from aam.models.graph import GraphProjection
 from aam.models.manifest import ContextCostSpec, PermissionSpec, SourceProvenance
 from aam.models.validation import ValidationReport
 
@@ -67,4 +68,5 @@ class InMemoryRegistry(IndexedModel):
     asset_cards: dict[str, AssetCardProjection] = Field(default_factory=dict)
     dependencies: dict[str, list[str]] = Field(default_factory=dict)
     reverse_dependencies: dict[str, list[str]] = Field(default_factory=dict)
+    graph: GraphProjection = Field(default_factory=GraphProjection)
     validation_report: ValidationReport

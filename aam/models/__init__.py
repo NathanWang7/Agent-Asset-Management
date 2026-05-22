@@ -1,6 +1,7 @@
 """Typed domain models package for Agent Asset Management."""
 
 from aam.models.asset_card import AssetCardProjection
+from aam.models.graph import GraphEdge, GraphNode, GraphProjection
 from aam.models.indexed import (
     IndexedAsset,
     IndexedPackage,
@@ -24,6 +25,9 @@ __all__ = [
     "AssetCardManifest",
     "AssetManifest",
     "ContextCostSpec",
+    "GraphEdge",
+    "GraphNode",
+    "GraphProjection",
     "IndexedAsset",
     "IndexedPackage",
     "IndexedProfile",

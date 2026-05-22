@@ -6,6 +6,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 from aam.asset_card.projection import build_asset_card_projection
+from aam.graph.projection import build_graph_projection
 from aam.hash.content_hash import compute_content_hash
 from aam.manifest.parser import parse_manifest
 from aam.manifest.resolver import ReferenceResolver
@@ -48,7 +49,7 @@ def build_registry(package_root: str | Path) -> InMemoryRegistry:
         dependencies,
     )
 
-    return InMemoryRegistry(
+    registry = InMemoryRegistry(
         packages={package.id: package},
         assets=assets,
         profiles=profiles,
@@ -59,6 +60,7 @@ def build_registry(package_root: str | Path) -> InMemoryRegistry:
         reverse_dependencies=reverse_dependencies,
         validation_report=validation_report,
     )
+    return registry.model_copy(update={"graph": build_graph_projection(registry)})
 
 
 def _build_indexed_package(manifest: PackageManifest) -> IndexedPackage:

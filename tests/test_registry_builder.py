@@ -6,8 +6,11 @@ from pathlib import Path
 
 import pytest
 
+from aam.manifest.resolver import ReferenceResolver
+from aam.models.manifest import PackageInfo, PackageManifest, ProfileManifest
 from aam.registry.builder import (
     RegistryBuildError,
+    _build_indexed_profile,
     _build_reverse_dependencies,
     build_registry,
 )
@@ -94,3 +97,17 @@ def test_reverse_dependency_guard_reports_unindexed_dependency() -> None:
 
     with pytest.raises(ValueError, match="Resolved dependency is not indexed"):
         _build_reverse_dependencies(["package:asset-a@0.1.0"], dependencies)
+
+
+def test_profile_include_guard_reports_unresolved_include() -> None:
+    manifest = PackageManifest(
+        package=PackageInfo(id="package", name="Package", version="0.1.0"),
+    )
+    profile = ProfileManifest(
+        id="profile",
+        target_host="codex",
+        includes=["asset:missing"],
+    )
+
+    with pytest.raises(ValueError, match="Unable to resolve profile include reference"):
+        _build_indexed_profile(manifest, profile, ReferenceResolver(manifest))

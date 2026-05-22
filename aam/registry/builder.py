@@ -147,6 +147,7 @@ def _build_indexed_profile(
     for reference in profile.includes:
         resolution = resolver.resolve_asset_reference(reference)
         if not resolution.ok or resolution.canonical is None:
+            # Validation and resolver output should make this unreachable.
             raise ValueError(
                 f"Unable to resolve profile include reference: {reference}"
             )

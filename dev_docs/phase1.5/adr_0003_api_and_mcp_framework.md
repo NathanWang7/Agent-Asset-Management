@@ -14,6 +14,8 @@ Use stdio as the first MCP transport target for AAM's local integration path. Tr
 
 Do not implement a production API server, production MCP server, registry business logic in MCP, assembly business logic in MCP, or framework probe code in Phase 1.5.
 
+This confirms the Phase 1.5 implementation spec's recommended defaults unless a spike finds a concrete blocker. No concrete blocker was found.
+
 ## Source Check
 
 Current official documentation reviewed for this ADR:
@@ -174,6 +176,8 @@ Phase 4A Local Agent Gateway API and Phase 4B MCP Server are separate adapters o
 
 Phase 4A should provide local HTTP endpoints for controlled discovery, Asset Card reads, explain/validate, assembly requests, materialization preview, health, and diagnostics.
 
+The Phase 4A API should fail closed by default. Its first implementation should bind only to localhost, avoid permissive CORS defaults, and treat any remote/shared access model as a separate future security design.
+
 Phase 4B should expose MCP resources/tools/prompts that call the same underlying services. MCP must not implement registry or assembly business logic. It should convert MCP requests to service calls, enforce the same policy boundaries, and return MCP-appropriate responses.
 
 The relationship should be:
@@ -240,6 +244,8 @@ Phase 4B implementation specs should define:
 - tests using SDK client/session helpers.
 
 Both phases should keep CLI, API, and MCP as adapters over service boundaries.
+
+The Phase 3 minimal reason-code explain/validate versus Phase 4A full explain/validate API boundary is assigned to the composition and assembly boundary work in WO5. This ADR only records the API/MCP framework and adapter boundary.
 
 ## Non-goals
 

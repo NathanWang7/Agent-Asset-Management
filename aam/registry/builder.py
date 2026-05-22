@@ -172,6 +172,10 @@ def _build_reverse_dependencies(
     reverse_dependencies = {asset_id: [] for asset_id in asset_ids}
     for asset_id, dependency_ids in dependencies.items():
         for dependency_id in dependency_ids:
+            if dependency_id not in reverse_dependencies:
+                raise ValueError(
+                    f"Resolved dependency is not indexed: {dependency_id}"
+                )
             reverse_dependencies[dependency_id].append(asset_id)
     return reverse_dependencies
 

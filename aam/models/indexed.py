@@ -67,7 +67,4 @@ class InMemoryRegistry(IndexedModel):
     asset_cards: dict[str, AssetCardProjection] = Field(default_factory=dict)
     dependencies: dict[str, list[str]] = Field(default_factory=dict)
     reverse_dependencies: dict[str, list[str]] = Field(default_factory=dict)
-    graph: dict[str, list[dict[str, object]]] = Field(
-        default_factory=lambda: {"nodes": [], "edges": []}
-    )
     validation_report: ValidationReport

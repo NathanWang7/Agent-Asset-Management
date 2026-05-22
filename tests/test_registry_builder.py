@@ -73,4 +73,11 @@ def test_build_registry_raises_on_validation_errors() -> None:
 
     report = error.value.validation_report
     assert report.ok is False
-    assert [issue.code for issue in report.issues if issue.severity.value == "error"]
+    error_codes = [
+        issue.code for issue in report.issues if issue.severity.value == "error"
+    ]
+    assert error_codes == [
+        "ASSET_PATH_MISSING",
+        "BROKEN_PROFILE_INCLUDE_REFERENCE",
+        "DEPENDENCY_CYCLE",
+    ]

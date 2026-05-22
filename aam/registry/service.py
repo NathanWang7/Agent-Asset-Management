@@ -25,6 +25,10 @@ class RegistryService:
     def __init__(self, registry: InMemoryRegistry) -> None:
         self._registry = registry
 
+    @property
+    def registry(self) -> InMemoryRegistry:
+        return self._registry
+
     @classmethod
     def from_package_root(cls, package_root: str | Path) -> RegistryService:
         return cls(build_registry(package_root))

@@ -57,7 +57,7 @@ FastAPI is an ASGI API framework centered on Python type hints, Pydantic models,
 
 Pros:
 
-- Strong fit with AAM's typed Python model style.
+- Strong fit with AAM's typed Python model style and existing Pydantic model investment from Phase 1.
 - OpenAPI generation supports future agent-facing and human-debuggable local API contracts.
 - Large ecosystem and common deployment/testing patterns.
 - Good match for Pydantic-based request and response contracts.
@@ -174,7 +174,7 @@ Decision: do not choose a third-party MCP framework for Phase 4B default.
 
 Phase 4A Local Agent Gateway API and Phase 4B MCP Server are separate adapters over shared AAM services.
 
-Phase 4A should provide local HTTP endpoints for controlled discovery, Asset Card reads, explain/validate, assembly requests, materialization preview, health, and diagnostics.
+Phase 4A should provide local HTTP endpoints for controlled discovery, Asset Card reads, health, diagnostics, and any stable Phase 3 service capabilities that are explicitly promoted into the Agent Gateway contract. Assembly, explain/validate, and materialization preview endpoints must follow the WO5 boundary decision rather than being inferred from this ADR alone.
 
 The Phase 4A API should fail closed by default. Its first implementation should bind only to localhost, avoid permissive CORS defaults, and treat any remote/shared access model as a separate future security design.
 

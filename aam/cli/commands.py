@@ -120,7 +120,7 @@ def show_asset(args: Namespace) -> int:
         dependencies = service.get_dependencies(args.asset_id)
         reverse_dependencies = service.get_reverse_dependencies(args.asset_id)
     except (ManifestParseError, RegistryBuildError, RegistryLookupError) as exc:
-        _print_error(exc, json_output=args.json)
+        _print_command_error(exc, json_output=args.json)
         return 1
 
     payload = asset_payload(asset, dependencies, reverse_dependencies)
@@ -139,7 +139,7 @@ def show_card(args: Namespace) -> int:
         service = RegistryService.from_package_root(args.package_dir)
         card = service.get_asset_card(args.asset_id)
     except (ManifestParseError, RegistryBuildError, RegistryLookupError) as exc:
-        _print_error(exc, json_output=args.json)
+        _print_command_error(exc, json_output=args.json)
         return 1
 
     if args.json:
@@ -178,6 +178,13 @@ def _print_build_error(exc: Exception, *, json_output: bool) -> None:
             )
             return
         print_validation_report(exc.validation_report)
+        return
+    _print_error(exc, json_output=json_output)
+
+
+def _print_command_error(exc: Exception, *, json_output: bool) -> None:
+    if isinstance(exc, RegistryBuildError):
+        _print_build_error(exc, json_output=json_output)
         return
     _print_error(exc, json_output=json_output)
 

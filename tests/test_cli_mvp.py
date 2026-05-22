@@ -111,6 +111,26 @@ def test_cli_show_asset_json_reports_lookup_errors(capsys) -> None:
     assert "Asset not found: missing" in payload["error"]
 
 
+def test_cli_show_asset_json_reports_validation_errors(capsys) -> None:
+    exit_code = main(
+        [
+            "show",
+            "asset",
+            str(FIXTURES / "validator_problem_package"),
+            "cycle-a",
+            "--json",
+        ]
+    )
+
+    payload = _json_stdout(capsys)
+    assert exit_code == 1
+    assert payload["ok"] is False
+    assert payload["validation"]["ok"] is False
+    assert "ASSET_PATH_MISSING" in {
+        issue["code"] for issue in payload["validation"]["issues"]
+    }
+
+
 def test_cli_validate_json_reports_parse_errors(tmp_path: Path, capsys) -> None:
     package_root = tmp_path / "missing-package"
 
@@ -138,6 +158,23 @@ def test_cli_show_card_json_outputs_asset_card(capsys) -> None:
     assert payload["id"] == "code-reviewer"
     assert payload["title"] == "Code Reviewer"
     assert payload["content_hash"].startswith("sha256:")
+
+
+def test_cli_show_card_json_reports_validation_errors(capsys) -> None:
+    exit_code = main(
+        [
+            "show",
+            "card",
+            str(FIXTURES / "validator_problem_package"),
+            "cycle-a",
+            "--json",
+        ]
+    )
+
+    payload = _json_stdout(capsys)
+    assert exit_code == 1
+    assert payload["ok"] is False
+    assert payload["validation"]["ok"] is False
 
 
 def test_cli_graph_export_json_outputs_nodes_and_edges(capsys) -> None:

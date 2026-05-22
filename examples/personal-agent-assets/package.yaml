@@ -1,0 +1,90 @@
+package:
+  id: personal-agent-assets
+  name: Personal Agent Assets
+  version: 0.1.0
+  description: Example local package for the Phase 1 quickstart.
+  tags:
+    - demo
+    - coding
+  source:
+    kind: manual_created
+    original_location: examples/personal-agent-assets
+    resolved_ref: null
+
+assets:
+  - id: code-reviewer
+    type: agent
+    path: agents/code_reviewer.md
+    visibility: exported
+    lifecycle_status: active
+    trust_status: trusted
+    description: Reviews code changes for correctness, maintainability, and risk.
+    tags:
+      - coding
+      - review
+    depends_on:
+      - asset:coding-style-guide
+    target_hosts:
+      - codex
+    permissions:
+      filesystem: read
+      network: none
+      shell: none
+    context_cost:
+      estimated_tokens: 1200
+    agent_card:
+      title: Code Reviewer
+      summary: Reviews code diffs and highlights risks.
+      intended_use:
+        - review code changes
+      input_context:
+        expects:
+          - diff
+          - source files
+      output_capabilities:
+        - review findings
+      risk_level: low
+    metadata:
+      owner: demo
+
+  - id: coding-style-guide
+    type: instruction
+    path: instructions/coding_style.md
+    visibility: exported
+    lifecycle_status: active
+    trust_status: trusted
+    description: Coding style guidance for local agent workflows.
+    tags:
+      - coding
+      - style
+    depends_on: []
+    target_hosts:
+      - codex
+    permissions:
+      filesystem: none
+      network: none
+      shell: none
+    context_cost:
+      estimated_tokens: 500
+    agent_card:
+      title: Coding Style Guide
+      summary: Keeps generated code changes consistent and small.
+      intended_use:
+        - guide code changes
+      input_context: {}
+      output_capabilities:
+        - coding guidance
+      risk_level: low
+    metadata:
+      owner: demo
+
+profiles:
+  - id: coding-review
+    target_host: codex
+    description: Demo profile for code review.
+    includes:
+      - asset:code-reviewer
+      - asset:coding-style-guide
+    tags:
+      - demo
+      - review

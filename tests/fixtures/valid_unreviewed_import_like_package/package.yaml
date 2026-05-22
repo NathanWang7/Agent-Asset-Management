@@ -1,0 +1,16 @@
+package:
+  id: valid-unreviewed-import-like-package
+  name: Valid Unreviewed Import Like Package
+  version: 0.1.0
+  source:
+    kind: local_directory
+    original_location: /tmp/import-like-package
+    resolved_ref: null
+
+assets:
+  - id: unreviewed-prompt
+    type: prompt
+    path: prompts/unreviewed.md
+    trust_status: unreviewed
+
+profiles: []

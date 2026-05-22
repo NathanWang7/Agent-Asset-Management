@@ -1,0 +1,12 @@
+package:
+  id: valid-blocked-asset-package
+  name: Valid Blocked Asset Package
+  version: 0.1.0
+
+assets:
+  - id: blocked-agent
+    type: agent
+    path: agents/blocked.md
+    trust_status: blocked
+
+profiles: []

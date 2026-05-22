@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from aam.core.enums import AssetType, AssetVisibility, LifecycleStatus, TrustStatus
@@ -21,6 +23,7 @@ class IndexedPackage(IndexedModel):
     id: str
     name: str
     version: str
+    indexed_at: datetime
     description: str | None = None
     tags: list[str] = Field(default_factory=list)
     source: SourceProvenance
@@ -31,6 +34,7 @@ class IndexedAsset(IndexedModel):
     package_version: str
     id: str
     qualified_id: str
+    indexed_at: datetime
     type: AssetType
     path: str
     absolute_path: str
@@ -54,6 +58,7 @@ class IndexedProfile(IndexedModel):
     package_version: str
     id: str
     qualified_id: str
+    indexed_at: datetime
     target_host: str
     description: str | None = None
     includes: list[str] = Field(default_factory=list)

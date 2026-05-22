@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
@@ -43,6 +44,23 @@ def test_build_registry_from_valid_package() -> None:
     assert asset.content_hash.startswith("sha256:")
     assert asset.asset_card.content_hash == asset.content_hash
     assert asset.asset_card.title == "Code Reviewer"
+
+
+def test_registry_uses_one_timezone_aware_indexed_at_per_build() -> None:
+    registry = build_registry(FIXTURES / "valid_basic_package")
+
+    indexed_at_values = [
+        package.indexed_at for package in registry.packages.values()
+    ] + [
+        asset.indexed_at for asset in registry.assets.values()
+    ] + [
+        profile.indexed_at for profile in registry.profiles.values()
+    ]
+
+    assert len(set(indexed_at_values)) == 1
+    indexed_at = indexed_at_values[0]
+    assert indexed_at.tzinfo is not None
+    assert indexed_at.utcoffset() is not None
 
 
 def test_registry_dependencies_and_reverse_dependencies_are_canonical() -> None:
@@ -110,4 +128,9 @@ def test_profile_include_guard_reports_unresolved_include() -> None:
     )
 
     with pytest.raises(ValueError, match="Unable to resolve profile include reference"):
-        _build_indexed_profile(manifest, profile, ReferenceResolver(manifest))
+        _build_indexed_profile(
+            manifest,
+            profile,
+            ReferenceResolver(manifest),
+            datetime.now(timezone.utc),
+        )

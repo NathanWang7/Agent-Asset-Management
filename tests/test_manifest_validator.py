@@ -179,6 +179,33 @@ def test_validator_reports_asset_path_escaping_package_root(tmp_path: Path) -> N
     assert report.issues[0].asset_id == "escape"
 
 
+def test_validator_rejects_absolute_asset_path_inside_package_root(
+    tmp_path: Path,
+) -> None:
+    asset_path = tmp_path / "prompts" / "absolute.md"
+    asset_path.parent.mkdir(parents=True, exist_ok=True)
+    asset_path.write_text("asset\n", encoding="utf-8")
+    manifest = _package(
+        assets=[
+            AssetManifest(
+                id="absolute",
+                type="prompt",
+                path=str(asset_path),
+                trust_status=TrustStatus.TRUSTED,
+            )
+        ]
+    )
+
+    report = validate_package(tmp_path, manifest)
+
+    assert report.ok is False
+    assert _issue_codes(ValidationSeverity.ERROR, report) == [
+        "ASSET_PATH_ABSOLUTE"
+    ]
+    assert report.issues[0].asset_id == "absolute"
+    assert report.issues[0].path == "assets[0].path"
+
+
 def test_validator_reports_expected_issues_from_fixture() -> None:
     package_root = FIXTURES / "validator_problem_package"
     manifest = parse_manifest(package_root)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
+from datetime import datetime, timezone
 from pathlib import Path
 
 from aam.asset_card.projection import build_asset_card_projection
@@ -37,9 +38,10 @@ def build_registry(package_root: str | Path) -> InMemoryRegistry:
     if not validation_report.ok:
         raise RegistryBuildError(validation_report)
 
-    package = _build_indexed_package(manifest)
-    assets = _build_indexed_assets(root, manifest)
-    profiles = _build_indexed_profiles(manifest)
+    indexed_at = datetime.now(timezone.utc)
+    package = _build_indexed_package(manifest, indexed_at)
+    assets = _build_indexed_assets(root, manifest, indexed_at)
+    profiles = _build_indexed_profiles(manifest, indexed_at)
     dependencies = {
         qualified_id: list(asset.resolved_dependencies)
         for qualified_id, asset in assets.items()
@@ -63,12 +65,16 @@ def build_registry(package_root: str | Path) -> InMemoryRegistry:
     return registry.model_copy(update={"graph": build_graph_projection(registry)})
 
 
-def _build_indexed_package(manifest: PackageManifest) -> IndexedPackage:
+def _build_indexed_package(
+    manifest: PackageManifest,
+    indexed_at: datetime,
+) -> IndexedPackage:
     package = manifest.package
     return IndexedPackage(
         id=package.id,
         name=package.name,
         version=package.version,
+        indexed_at=indexed_at,
         description=package.description,
         tags=list(package.tags),
         source=package.source,
@@ -78,12 +84,14 @@ def _build_indexed_package(manifest: PackageManifest) -> IndexedPackage:
 def _build_indexed_assets(
     package_root: Path,
     manifest: PackageManifest,
+    indexed_at: datetime,
 ) -> dict[str, IndexedAsset]:
     return {
         _asset_qualified_id(manifest, asset): _build_indexed_asset(
             package_root,
             manifest,
             asset,
+            indexed_at,
         )
         for asset in manifest.assets
     }
@@ -93,6 +101,7 @@ def _build_indexed_asset(
     package_root: Path,
     manifest: PackageManifest,
     asset: AssetManifest,
+    indexed_at: datetime,
 ) -> IndexedAsset:
     absolute_path = (package_root / asset.path).resolve()
     content_hash = compute_content_hash(absolute_path)
@@ -107,6 +116,7 @@ def _build_indexed_asset(
         package_version=manifest.package.version,
         id=asset.id,
         qualified_id=qualified_id,
+        indexed_at=indexed_at,
         type=asset.type,
         path=asset.path,
         absolute_path=str(absolute_path),
@@ -128,6 +138,7 @@ def _build_indexed_asset(
 
 def _build_indexed_profiles(
     manifest: PackageManifest,
+    indexed_at: datetime,
 ) -> dict[str, IndexedProfile]:
     resolver = ReferenceResolver(manifest)
     return {
@@ -135,6 +146,7 @@ def _build_indexed_profiles(
             manifest,
             profile,
             resolver,
+            indexed_at,
         )
         for profile in manifest.profiles
     }
@@ -144,6 +156,7 @@ def _build_indexed_profile(
     manifest: PackageManifest,
     profile: ProfileManifest,
     resolver: ReferenceResolver,
+    indexed_at: datetime,
 ) -> IndexedProfile:
     resolved_includes: list[str] = []
     for reference in profile.includes:
@@ -160,6 +173,7 @@ def _build_indexed_profile(
         package_version=manifest.package.version,
         id=profile.id,
         qualified_id=_profile_qualified_id(manifest, profile),
+        indexed_at=indexed_at,
         target_host=profile.target_host,
         description=profile.description,
         includes=list(profile.includes),

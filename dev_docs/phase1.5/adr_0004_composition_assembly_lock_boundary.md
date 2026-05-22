@@ -42,6 +42,7 @@ Task + target host
   -> Materialization
 
 Task + base Profile
+  -> ProfileClosureService
   -> Discovery with base profile
   -> Assembly Plan with profile_delta
   -> Approval
@@ -224,7 +225,7 @@ Outputs:
 - dependency graph;
 - trust and permission snapshot;
 - accepted warnings;
-- policy snapshot reference or embedded snapshot.
+- policy snapshot reference or embedded snapshot;
 - materialization assumptions;
 - source task and base profile metadata when applicable.
 

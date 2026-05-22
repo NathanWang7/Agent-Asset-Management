@@ -40,7 +40,7 @@ Responsibility: resolve a saved profile into a closed asset set.
 Inputs:
 
 - `profile_id` or `profile_qualified_id`;
-- `RegistryService` or future registry query service;
+- registry query service;
 - `target_host`;
 - `policy_context`;
 - `closure_options`;

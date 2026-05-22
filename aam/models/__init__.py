@@ -1,6 +1,12 @@
 """Typed domain models package for Agent Asset Management."""
 
 from aam.models.asset_card import AssetCardProjection
+from aam.models.indexed import (
+    IndexedAsset,
+    IndexedPackage,
+    IndexedProfile,
+    InMemoryRegistry,
+)
 from aam.models.manifest import (
     AssetCardManifest,
     AssetManifest,
@@ -18,6 +24,10 @@ __all__ = [
     "AssetCardManifest",
     "AssetManifest",
     "ContextCostSpec",
+    "IndexedAsset",
+    "IndexedPackage",
+    "IndexedProfile",
+    "InMemoryRegistry",
     "PackageInfo",
     "PackageManifest",
     "PermissionSpec",

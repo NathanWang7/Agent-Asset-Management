@@ -1,0 +1,64 @@
+package:
+  id: personal-agent-assets
+  name: Personal Agent Assets
+  version: 0.1.0
+  description: Personal reusable agent assets for AI coding workflows.
+  tags:
+    - personal
+    - coding
+  source:
+    kind: manual_created
+    original_location: null
+    resolved_ref: null
+
+assets:
+  - id: code-reviewer
+    type: agent
+    path: agents/code_reviewer.md
+    visibility: exported
+    lifecycle_status: active
+    trust_status: trusted
+    description: Reviews code for correctness, maintainability, and risk.
+    tags:
+      - coding
+      - review
+    depends_on:
+      - asset:coding-style-guide
+    target_hosts:
+      - codex
+      - claude_code
+    permissions:
+      filesystem: read
+      network: none
+      shell: none
+    context_cost:
+      estimated_tokens: 1200
+    agent_card:
+      title: Code Reviewer
+      summary: Reviews code changes and identifies correctness issues.
+      intended_use:
+        - review code diff
+      input_context:
+        expects:
+          - source code
+          - diff
+      output_capabilities:
+        - review comments
+      risk_level: low
+    metadata:
+      owner: local
+
+  - id: coding-style-guide
+    type: instruction
+    path: instructions/coding_style.md
+
+profiles:
+  - id: coding-review
+    target_host: codex
+    description: Baseline profile for coding review tasks.
+    includes:
+      - asset:code-reviewer
+      - asset:coding-style-guide
+    tags:
+      - coding
+      - review

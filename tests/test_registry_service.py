@@ -38,6 +38,9 @@ def test_service_lists_and_gets_registry_objects() -> None:
     )
     assert [profile.id for profile in service.list_profiles()] == ["coding-review"]
     assert service.get_profile("coding-review").target_host == "codex"
+    assert service.get_profile(
+        "personal-agent-assets:coding-review@0.1.0"
+    ).target_host == "codex"
     assert service.get_asset_card("code-reviewer").title == "Code Reviewer"
 
 
@@ -79,3 +82,35 @@ def test_service_reports_missing_assets_clearly() -> None:
 
     with pytest.raises(RegistryLookupError, match="Asset not found: missing"):
         service.get_asset("missing")
+
+
+def test_service_reports_missing_profiles_clearly() -> None:
+    service = _service()
+
+    with pytest.raises(RegistryLookupError, match="Profile not found: missing"):
+        service.get_profile("missing")
+
+
+def test_service_reports_missing_dependency_targets_clearly() -> None:
+    registry = build_registry(FIXTURES / "valid_basic_package")
+    registry.dependencies["personal-agent-assets:code-reviewer@0.1.0"] = [
+        "personal-agent-assets:missing@0.1.0"
+    ]
+    service = RegistryService(registry)
+
+    with pytest.raises(RegistryLookupError, match="Dependency not found in registry"):
+        service.get_dependencies("code-reviewer")
+
+
+def test_service_reports_missing_reverse_dependency_targets_clearly() -> None:
+    registry = build_registry(FIXTURES / "valid_basic_package")
+    registry.reverse_dependencies[
+        "personal-agent-assets:coding-style-guide@0.1.0"
+    ] = ["personal-agent-assets:missing@0.1.0"]
+    service = RegistryService(registry)
+
+    with pytest.raises(
+        RegistryLookupError,
+        match="Dependent asset not found in registry",
+    ):
+        service.get_reverse_dependencies("coding-style-guide")

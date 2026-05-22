@@ -46,14 +46,20 @@ class RegistryService:
 
     def get_asset(self, asset_id: str) -> IndexedAsset:
         qualified_id = self._resolve_asset_id(asset_id)
-        return self._registry.assets[qualified_id]
+        try:
+            return self._registry.assets[qualified_id]
+        except KeyError as exc:
+            raise RegistryLookupError(f"Asset not found: {asset_id}") from exc
 
     def list_profiles(self) -> list[IndexedProfile]:
         return list(self._registry.profiles.values())
 
     def get_profile(self, profile_id: str) -> IndexedProfile:
         qualified_id = self._resolve_profile_id(profile_id)
-        return self._registry.profiles[qualified_id]
+        try:
+            return self._registry.profiles[qualified_id]
+        except KeyError as exc:
+            raise RegistryLookupError(f"Profile not found: {profile_id}") from exc
 
     def get_asset_card(self, asset_id: str) -> AssetCardProjection:
         asset = self.get_asset(asset_id)
@@ -61,16 +67,28 @@ class RegistryService:
 
     def get_dependencies(self, asset_id: str) -> list[IndexedAsset]:
         asset = self.get_asset(asset_id)
+        try:
+            dependency_ids = self._registry.dependencies[asset.qualified_id]
+        except KeyError as exc:
+            raise RegistryLookupError(
+                f"Dependencies not found for asset: {asset_id}"
+            ) from exc
         return [
-            self._registry.assets[dependency_id]
-            for dependency_id in self._registry.dependencies[asset.qualified_id]
+            _lookup_related_asset(self._registry, dependency_id, "Dependency")
+            for dependency_id in dependency_ids
         ]
 
     def get_reverse_dependencies(self, asset_id: str) -> list[IndexedAsset]:
         asset = self.get_asset(asset_id)
+        try:
+            dependent_ids = self._registry.reverse_dependencies[asset.qualified_id]
+        except KeyError as exc:
+            raise RegistryLookupError(
+                f"Reverse dependencies not found for asset: {asset_id}"
+            ) from exc
         return [
-            self._registry.assets[dependent_id]
-            for dependent_id in self._registry.reverse_dependencies[asset.qualified_id]
+            _lookup_related_asset(self._registry, dependent_id, "Dependent asset")
+            for dependent_id in dependent_ids
         ]
 
     def _resolve_asset_id(self, asset_id: str) -> str:
@@ -119,3 +137,16 @@ def _asset_matches_filters(asset: IndexedAsset, filters: AssetFilters) -> bool:
     ):
         return False
     return True
+
+
+def _lookup_related_asset(
+    registry: InMemoryRegistry,
+    qualified_id: str,
+    relation_name: str,
+) -> IndexedAsset:
+    try:
+        return registry.assets[qualified_id]
+    except KeyError as exc:
+        raise RegistryLookupError(
+            f"{relation_name} not found in registry: {qualified_id}"
+        ) from exc

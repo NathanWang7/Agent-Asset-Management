@@ -6,7 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from aam.registry.builder import RegistryBuildError, build_registry
+from aam.registry.builder import (
+    RegistryBuildError,
+    _build_reverse_dependencies,
+    build_registry,
+)
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -81,3 +85,12 @@ def test_build_registry_raises_on_validation_errors() -> None:
         "BROKEN_PROFILE_INCLUDE_REFERENCE",
         "DEPENDENCY_CYCLE",
     ]
+
+
+def test_reverse_dependency_guard_reports_unindexed_dependency() -> None:
+    dependencies = {
+        "package:asset-a@0.1.0": ["package:missing@0.1.0"],
+    }
+
+    with pytest.raises(ValueError, match="Resolved dependency is not indexed"):
+        _build_reverse_dependencies(["package:asset-a@0.1.0"], dependencies)

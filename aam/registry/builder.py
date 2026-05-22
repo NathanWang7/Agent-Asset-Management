@@ -173,6 +173,7 @@ def _build_reverse_dependencies(
     for asset_id, dependency_ids in dependencies.items():
         for dependency_id in dependency_ids:
             if dependency_id not in reverse_dependencies:
+                # Validation and resolver output should make this unreachable.
                 raise ValueError(
                     f"Resolved dependency is not indexed: {dependency_id}"
                 )

@@ -123,7 +123,7 @@ Decision: not recommended for the Local Agent Gateway API.
 
 ### Official MCP Python SDK
 
-The official MCP Python SDK supports MCP server/client development, FastMCP ergonomics, resources, tools, prompts, stdio, and Streamable HTTP examples.
+The official MCP Python SDK supports MCP server/client development, FastMCP ergonomics, resources, tools, prompts, stdio, and Streamable HTTP examples. FastMCP is the SDK's higher-level server abstraction; lower-level server primitives remain available when AAM needs more control.
 
 Pros:
 
@@ -238,6 +238,7 @@ Phase 4B implementation specs should define:
 - official MCP Python SDK dependency and version policy;
 - stdio server entry point;
 - MCP resource/tool/prompt inventory;
+- MCP authentication, authorization, and trust-boundary enforcement aligned with AAM's policy model;
 - policy and service boundary enforcement;
 - error handling and degraded-mode behavior;
 - event placeholder emission boundaries;

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from aam.asset_card.projection import build_asset_card_projection
 from aam.core.enums import (
     FilesystemPermission,
@@ -164,6 +166,23 @@ def test_asset_card_projects_resolved_dependencies_in_manifest_order() -> None:
         "local.assets:style-guide@0.1.0",
         "local.assets:style-guide@0.1.0",
     ]
+
+
+def test_asset_card_raises_on_unresolvable_dependency() -> None:
+    asset = AssetManifest(
+        id="reviewer",
+        type="agent",
+        path="agents/reviewer.md",
+        trust_status=TrustStatus.TRUSTED,
+        depends_on=["asset:missing"],
+    )
+
+    with pytest.raises(ValueError, match="Unable to resolve dependency reference"):
+        build_asset_card_projection(
+            manifest=_manifest(asset),
+            asset=asset,
+            content_hash="sha256:abc",
+        )
 
 
 def test_asset_card_contains_all_phase_1_hard_fields() -> None:

@@ -36,3 +36,13 @@ def test_hash_format_uses_sha256_prefix(tmp_path: Path) -> None:
 
     assert content_hash.startswith("sha256:")
     assert len(content_hash.removeprefix("sha256:")) == 64
+
+
+def test_empty_file_produces_valid_hash(tmp_path: Path) -> None:
+    asset_path = tmp_path / "empty.md"
+    asset_path.write_bytes(b"")
+
+    content_hash = compute_content_hash(asset_path)
+
+    assert content_hash.startswith("sha256:")
+    assert len(content_hash.removeprefix("sha256:")) == 64

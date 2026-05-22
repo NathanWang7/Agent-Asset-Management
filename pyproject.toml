@@ -7,7 +7,9 @@ name = "agent-asset-management"
 version = "0.1.0"
 description = "Local-first Agent Asset Management package system."
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "pydantic>=2,<3",
+]
 
 [project.optional-dependencies]
 dev = [

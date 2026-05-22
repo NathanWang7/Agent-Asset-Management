@@ -10,6 +10,7 @@ from aam.models.manifest import (
     ProfileManifest,
     SourceProvenance,
 )
+from aam.models.validation import ValidationIssue, ValidationReport
 
 __all__ = [
     "AssetCardManifest",
@@ -20,4 +21,6 @@ __all__ = [
     "PermissionSpec",
     "ProfileManifest",
     "SourceProvenance",
+    "ValidationIssue",
+    "ValidationReport",
 ]

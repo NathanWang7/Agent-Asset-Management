@@ -1,0 +1,30 @@
+package:
+  id: validator-problem-package
+  name: Validator Problem Package
+  version: 0.1.0
+
+assets:
+  - id: cycle-a
+    type: agent
+    path: agents/cycle_a.md
+    trust_status: trusted
+    depends_on:
+      - asset:cycle-b
+
+  - id: cycle-b
+    type: agent
+    path: agents/cycle_b.md
+    trust_status: trusted
+    depends_on:
+      - asset:cycle-a
+
+  - id: missing-file
+    type: prompt
+    path: prompts/missing.md
+    trust_status: blocked
+
+profiles:
+  - id: broken-profile
+    target_host: codex
+    includes:
+      - asset:missing-profile-asset

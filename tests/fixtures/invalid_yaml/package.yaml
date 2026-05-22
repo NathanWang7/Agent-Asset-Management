@@ -1,0 +1,12 @@
+package:
+  id: invalid-yaml
+  name: Invalid YAML
+  version: 0.1.0
+assets:
+  - id: broken
+    type: prompt
+    path: prompts/broken.md
+    tags:
+      - one
+      - two
+    malformed: [unterminated

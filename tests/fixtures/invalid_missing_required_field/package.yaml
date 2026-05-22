@@ -1,0 +1,8 @@
+package:
+  name: Missing Required Field
+  version: 0.1.0
+
+assets:
+  - id: minimal-prompt
+    type: prompt
+    path: prompts/minimal.md

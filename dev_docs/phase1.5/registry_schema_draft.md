@@ -184,6 +184,16 @@ WHERE dependency_qualified_id = ?
 ORDER BY asset_qualified_id;
 ```
 
+A Phase 2 implementation may expose the same lookup as a named view:
+
+```sql
+CREATE VIEW registry_reverse_asset_dependencies AS
+SELECT
+  dependency_qualified_id,
+  asset_qualified_id
+FROM registry_asset_dependencies;
+```
+
 ### `registry_profile_includes`
 
 Stores resolved profile-to-asset include edges. This table is not a direct Phase 1 `InMemoryRegistry` field, but it avoids repeatedly parsing `resolved_includes_json`.
@@ -258,7 +268,9 @@ Indexes:
 
 ## Reserved Event Placeholder Tables
 
-Phase 2 may reserve append-only placeholders, but detailed event semantics belong to ADR 0002.
+Phase 2 may reserve append-only placeholders, but detailed event semantics belong to ADR 0002. The table names below are included only to show that the SQLite registry schema has reserved space for those future placeholders.
+
+Column-level definitions, constraints, indexes, and retention rules are intentionally deferred to WO3 / ADR 0002 so WO2 does not preempt the event-shape decision.
 
 ### `registry_usage_events`
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted for Phase 2 planning.
+Accepted (Phase 1.5), 2026-05-22.
 
 ## Decision
 

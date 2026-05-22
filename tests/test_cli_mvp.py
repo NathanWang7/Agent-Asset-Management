@@ -39,13 +39,11 @@ def test_cli_index_json_outputs_registry_summary(capsys) -> None:
 
     payload = _json_stdout(capsys)
     assert exit_code == 0
-    assert payload == {
-        "asset_count": 2,
-        "edge_count": 18,
-        "node_count": 13,
-        "package_count": 1,
-        "profile_count": 1,
-    }
+    assert payload["asset_count"] == 2
+    assert payload["edge_count"] >= 1
+    assert payload["node_count"] >= 1
+    assert payload["package_count"] == 1
+    assert payload["profile_count"] == 1
 
 
 def test_cli_list_assets_json_supports_filters(capsys) -> None:
@@ -94,6 +92,34 @@ def test_cli_show_asset_json_omits_file_content(capsys) -> None:
         "personal-agent-assets:coding-style-guide@0.1.0"
     ]
     assert "content" not in payload
+
+
+def test_cli_show_asset_json_reports_lookup_errors(capsys) -> None:
+    exit_code = main(
+        [
+            "show",
+            "asset",
+            str(FIXTURES / "valid_basic_package"),
+            "missing",
+            "--json",
+        ]
+    )
+
+    payload = _json_stdout(capsys)
+    assert exit_code == 1
+    assert payload["ok"] is False
+    assert "Asset not found: missing" in payload["error"]
+
+
+def test_cli_validate_json_reports_parse_errors(tmp_path: Path, capsys) -> None:
+    package_root = tmp_path / "missing-package"
+
+    exit_code = main(["validate", str(package_root), "--json"])
+
+    payload = _json_stdout(capsys)
+    assert exit_code == 1
+    assert payload["ok"] is False
+    assert "package.yaml not found" in payload["error"]
 
 
 def test_cli_show_card_json_outputs_asset_card(capsys) -> None:

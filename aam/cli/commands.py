@@ -44,7 +44,7 @@ def validate(args: Namespace) -> int:
         manifest = parse_manifest(package_root)
         report = validate_package(package_root, manifest)
     except ManifestParseError as exc:
-        print(str(exc))
+        _print_error(exc, json_output=args.json)
         return 1
 
     if args.json:
@@ -58,7 +58,7 @@ def index(args: Namespace) -> int:
     try:
         service = RegistryService.from_package_root(args.package_dir)
     except (ManifestParseError, RegistryBuildError) as exc:
-        _print_build_error(exc)
+        _print_build_error(exc, json_output=args.json)
         return 1
 
     summary = registry_summary(service.registry)
@@ -86,7 +86,7 @@ def list_assets(args: Namespace) -> int:
         )
         assets = service.list_assets(filters)
     except (ManifestParseError, RegistryBuildError) as exc:
-        _print_build_error(exc)
+        _print_build_error(exc, json_output=args.json)
         return 1
 
     if args.json:
@@ -102,7 +102,7 @@ def list_profiles(args: Namespace) -> int:
         service = RegistryService.from_package_root(args.package_dir)
         profiles = service.list_profiles()
     except (ManifestParseError, RegistryBuildError) as exc:
-        _print_build_error(exc)
+        _print_build_error(exc, json_output=args.json)
         return 1
 
     if args.json:
@@ -120,7 +120,7 @@ def show_asset(args: Namespace) -> int:
         dependencies = service.get_dependencies(args.asset_id)
         reverse_dependencies = service.get_reverse_dependencies(args.asset_id)
     except (ManifestParseError, RegistryBuildError, RegistryLookupError) as exc:
-        print(str(exc))
+        _print_error(exc, json_output=args.json)
         return 1
 
     payload = asset_payload(asset, dependencies, reverse_dependencies)
@@ -139,7 +139,7 @@ def show_card(args: Namespace) -> int:
         service = RegistryService.from_package_root(args.package_dir)
         card = service.get_asset_card(args.asset_id)
     except (ManifestParseError, RegistryBuildError, RegistryLookupError) as exc:
-        print(str(exc))
+        _print_error(exc, json_output=args.json)
         return 1
 
     if args.json:
@@ -155,7 +155,7 @@ def graph_export(args: Namespace) -> int:
     try:
         service = RegistryService.from_package_root(args.package_dir)
     except (ManifestParseError, RegistryBuildError) as exc:
-        _print_build_error(exc)
+        _print_build_error(exc, json_output=args.json)
         return 1
 
     if args.json:
@@ -166,9 +166,25 @@ def graph_export(args: Namespace) -> int:
     return 0
 
 
-def _print_build_error(exc: Exception) -> None:
+def _print_build_error(exc: Exception, *, json_output: bool) -> None:
     if isinstance(exc, RegistryBuildError):
+        if json_output:
+            emit_json(
+                {
+                    "ok": False,
+                    "error": str(exc),
+                    "validation": validation_payload(exc.validation_report),
+                }
+            )
+            return
         print_validation_report(exc.validation_report)
+        return
+    _print_error(exc, json_output=json_output)
+
+
+def _print_error(exc: Exception, *, json_output: bool) -> None:
+    if json_output:
+        emit_json({"ok": False, "error": str(exc)})
         return
     print(str(exc))
 
